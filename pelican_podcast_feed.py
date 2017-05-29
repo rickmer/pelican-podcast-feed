@@ -237,7 +237,7 @@ class iTunesWriter(Writer):
             items['itunes:summary'] = Markup(item.summary).striptags()
 
         items['description'] = "<![CDATA[{}]]>".format(
-            Markup(item.summary)
+            Markup(item.content)
             )
 
         # Date the article was last modified.
@@ -268,7 +268,10 @@ class iTunesWriter(Writer):
         #  ex: <enclosure url="http://example.com/episode.m4a"
         #   length="872731" type="audio/x-m4a" />
         if hasattr(item, 'podcast'):
-            enclosure = {'url': item.podcast}
+            if item.podcast[0:4] == 'http':
+                enclosure = {'url': item.podcast}
+            else:
+                enclosure = {'url': '{0}/{1}'.format(self.site_url, item.podcast)}
             # Include the file size if available.
             if hasattr(item, 'length'):
                 enclosure['length'] = item.length
